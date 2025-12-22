@@ -1,69 +1,282 @@
 using Fish.Common;
-using Fish.Common.Services;
-using Fish.Common.Extensions;
+using Fish.Infrastructure;
+using Fish.Infrastructure.Models;
+using Fish.NoSQL;
+using Fish.NoSQL.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fish.Console
 {
     class Program
     {
-        // Лічильник для демонстрації lock
-        private static int _counter = 0;
-        private static readonly object _lockObject = new object();
-
         static async Task Main(string[] args)
         {
             System.Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-            // Створення асинхронного CRUD сервісу
-            var fishService = new CrudServiceAsync<FishBase>(fish => fish.Id, "fish_collection.json");
+            System.Console.WriteLine("=== Лабораторна робота №3: Entity Framework та MongoDB ===\n");
 
-            // Демонстрація паралельного створення об'єктів
+            // Налаштування PostgreSQL
+            var connectionString = "Host=localhost;Database=FishDb;Username=postgres;Password=postgres";
+            var optionsBuilder = new DbContextOptionsBuilder<FishContext>();
+            optionsBuilder.UseNpgsql(connectionString);
+
+            // Створення контексту та застосування міграцій
+            using var context = new FishContext(optionsBuilder.Options);
+            
+            System.Console.WriteLine("Застосування міграцій до PostgreSQL...");
+            try
+            {
+                await context.Database.MigrateAsync();
+                System.Console.WriteLine("Міграції успішно застосовані!\n");
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine($"Помилка підключення до PostgreSQL: {ex.Message}");
+                System.Console.WriteLine("Переконайтеся, що PostgreSQL запущено та доступний.\n");
+            }
+
+            // Налаштування MongoDB
+            var mongoConnectionString = "mongodb://localhost:27017";
+            var mongoDatabase = "FishDb";
+            var mongoCollection = "fishes";
+            var mongoRepo = new MongoRepository<FishDocument>(mongoConnectionString, mongoDatabase, mongoCollection);
+
+            System.Console.WriteLine("Підключення до MongoDB...");
+            try
+            {
+                await mongoRepo.ClearAsync(); // Очищення колекції для чистого тесту
+                System.Console.WriteLine("MongoDB підключено!\n");
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine($"Помилка підключення до MongoDB: {ex.Message}");
+                System.Console.WriteLine("Переконайтеся, що MongoDB запущено та доступний.\n");
+            }
+
+            // Створення репозиторіїв для PostgreSQL
+            var aquariumRepo = new Repository<AquariumModel>(context);
+            var fishRepo = new Repository<FishModel>(context);
+            var feedRepo = new Repository<FeedModel>(context);
+
+            // Створення акваріумів
+            System.Console.WriteLine("=== Створення акваріумів ===");
+            var aquariums = new List<AquariumModel>
+            {
+                new AquariumModel { ExternalId = Guid.NewGuid(), Name = "Тропічний акваріум", Volume = 500, Location = "Зал 1" },
+                new AquariumModel { ExternalId = Guid.NewGuid(), Name = "Морський акваріум", Volume = 1000, Location = "Зал 2" },
+                new AquariumModel { ExternalId = Guid.NewGuid(), Name = "Річковий акваріум", Volume = 300, Location = "Зал 3" }
+            };
+
+            foreach (var aquarium in aquariums)
+            {
+                await aquariumRepo.AddAsync(aquarium);
+            }
+            await aquariumRepo.SaveChangesAsync();
+            System.Console.WriteLine($"Створено {aquariums.Count} акваріумів\n");
+
+            // Створення кормів
+            System.Console.WriteLine("=== Створення кормів ===");
+            var feeds = new List<FeedModel>
+            {
+                new FeedModel { Name = "Сухий корм", Type = "Універсальний", Price = 150.50 },
+                new FeedModel { Name = "Живий корм", Type = "Спеціалізований", Price = 250.00 },
+                new FeedModel { Name = "Заморожений корм", Type = "Преміум", Price = 320.75 }
+            };
+
+            foreach (var feed in feeds)
+            {
+                await feedRepo.AddAsync(feed);
+            }
+            await feedRepo.SaveChangesAsync();
+            System.Console.WriteLine($"Створено {feeds.Count} типів корму\n");
+
+            // Паралельне створення риб
             System.Console.WriteLine("=== Паралельне створення риб ===");
             System.Console.WriteLine("Створюємо 1200 об'єктів риб паралельно...\n");
 
             var startTime = DateTime.Now;
+            var allFishList = new List<FishBase>();
+            var lockObj = new object();
 
-            // Створення 1200 риб (по 400 кожного типу)
+            // Створення 1200 риб (по 400 кожного типу) паралельно
             await Task.Run(() =>
             {
-                Parallel.For(0, 400, async i =>
+                Parallel.For(0, 400, i =>
                 {
                     var freshwater = FreshwaterFish.CreateNew();
-                    await fishService.CreateAsync(freshwater);
+                    lock (lockObj)
+                    {
+                        allFishList.Add(freshwater);
+                    }
                 });
             });
 
             await Task.Run(() =>
             {
-                Parallel.For(0, 400, async i =>
+                Parallel.For(0, 400, i =>
                 {
                     var saltwater = SaltwaterFish.CreateNew();
-                    await fishService.CreateAsync(saltwater);
+                    lock (lockObj)
+                    {
+                        allFishList.Add(saltwater);
+                    }
                 });
             });
 
             await Task.Run(() =>
             {
-                Parallel.For(0, 400, async i =>
+                Parallel.For(0, 400, i =>
                 {
                     var migratory = MigratoryFish.CreateNew();
-                    await fishService.CreateAsync(migratory);
+                    lock (lockObj)
+                    {
+                        allFishList.Add(migratory);
+                    }
                 });
             });
 
             var endTime = DateTime.Now;
             var duration = (endTime - startTime).TotalMilliseconds;
 
-            System.Console.WriteLine($"Створено {fishService.Count()} об'єктів риб");
+            System.Console.WriteLine($"Створено {allFishList.Count} об'єктів риб");
             System.Console.WriteLine($"Час виконання: {duration:F2} мс\n");
 
-            // LINQ - отримання статистики
-            System.Console.WriteLine("=== LINQ: Статистика по рибах ===\n");
+            // Збереження в PostgreSQL
+            System.Console.WriteLine("=== Збереження в PostgreSQL ===");
+            var random = new Random();
+            int savedToPostgres = 0;
 
-            var allFish = await fishService.ReadAllAsync();
-            
-            // Статистика для прісноводних риб
-            var freshwaterFishes = allFish.OfType<FreshwaterFish>().ToList();
+            foreach (var fish in allFishList)
+            {
+                FishModel fishModel;
+                
+                if (fish is FreshwaterFish fw)
+                {
+                    fishModel = new FreshwaterFishModel
+                    {
+                        ExternalId = fish.Id,
+                        Variety = fish.FishType.Variety,
+                        Habitat = fish.FishType.Habitat,
+                        TopSpeed = (int)fish.FishType.TopSpeed,
+                        IsPredatory = fish.FishType.IsPredatory,
+                        Length = fish.FishType.Length,
+                        AquariumId = aquariums[random.Next(aquariums.Count)].Id,
+                        PreferredTemperature = fw.PreferredTemperature,
+                        PhLevel = fw.PhLevel,
+                        TankSize = fw.TankSize
+                    };
+                }
+                else if (fish is SaltwaterFish sw)
+                {
+                    fishModel = new SaltwaterFishModel
+                    {
+                        ExternalId = fish.Id,
+                        Variety = fish.FishType.Variety,
+                        Habitat = fish.FishType.Habitat,
+                        TopSpeed = (int)fish.FishType.TopSpeed,
+                        IsPredatory = fish.FishType.IsPredatory,
+                        Length = fish.FishType.Length,
+                        AquariumId = aquariums[random.Next(aquariums.Count)].Id,
+                        SaltTolerance = sw.SaltTolerance,
+                        MaxDepth = sw.MaxDepth,
+                        CoralReefCompatible = sw.CoralReefCompatible
+                    };
+                }
+                else if (fish is MigratoryFish mf)
+                {
+                    fishModel = new MigratoryFishModel
+                    {
+                        ExternalId = fish.Id,
+                        Variety = fish.FishType.Variety,
+                        Habitat = fish.FishType.Habitat,
+                        TopSpeed = (int)fish.FishType.TopSpeed,
+                        IsPredatory = fish.FishType.IsPredatory,
+                        Length = fish.FishType.Length,
+                        AquariumId = aquariums[random.Next(aquariums.Count)].Id,
+                        MigrationDistance = mf.MigrationDistance,
+                        SpawningGrounds = mf.SpawningGrounds,
+                        MigrationSeason = mf.MigrationSeason
+                    };
+                }
+                else
+                {
+                    continue;
+                }
+
+                // Додавання кормів (багато-до-багатьох)
+                var feedCount = random.Next(1, 4);
+                for (int i = 0; i < feedCount; i++)
+                {
+                    fishModel.Feeds.Add(feeds[random.Next(feeds.Count)]);
+                }
+
+                // Додавання деталей (один-до-одного)
+                fishModel.Details = new FishDetailsModel
+                {
+                    BirthDate = DateTime.Now.AddDays(-random.Next(30, 365)),
+                    HealthStatus = random.Next(2) == 0 ? "Здорова" : "Відмінна",
+                    Weight = Math.Round(random.NextDouble() * 2 + 0.1, 2)
+                };
+
+                await fishRepo.AddAsync(fishModel);
+                savedToPostgres++;
+            }
+
+            await fishRepo.SaveChangesAsync();
+            System.Console.WriteLine($"Збережено {savedToPostgres} риб в PostgreSQL\n");
+
+            // Збереження в MongoDB
+            System.Console.WriteLine("=== Збереження в MongoDB ===");
+            int savedToMongo = 0;
+
+            foreach (var fish in allFishList)
+            {
+                var fishDoc = new FishDocument
+                {
+                    ExternalId = fish.Id,
+                    Variety = fish.FishType.Variety,
+                    Habitat = fish.FishType.Habitat,
+                    TopSpeed = (int)fish.FishType.TopSpeed,
+                    IsPredatory = fish.FishType.IsPredatory,
+                    Length = fish.FishType.Length
+                };
+
+                if (fish is FreshwaterFish fw)
+                {
+                    fishDoc.FishType = "Freshwater";
+                    fishDoc.PreferredTemperature = fw.PreferredTemperature;
+                    fishDoc.PhLevel = fw.PhLevel;
+                    fishDoc.TankSize = fw.TankSize;
+                }
+                else if (fish is SaltwaterFish sw)
+                {
+                    fishDoc.FishType = "Saltwater";
+                    fishDoc.SaltTolerance = sw.SaltTolerance;
+                    fishDoc.MaxDepth = sw.MaxDepth;
+                    fishDoc.CoralReefCompatible = sw.CoralReefCompatible;
+                }
+                else if (fish is MigratoryFish mf)
+                {
+                    fishDoc.FishType = "Migratory";
+                    fishDoc.MigrationDistance = mf.MigrationDistance;
+                    fishDoc.SpawningGrounds = mf.SpawningGrounds;
+                    fishDoc.MigrationSeason = mf.MigrationSeason;
+                }
+
+                await mongoRepo.AddAsync(fishDoc);
+                savedToMongo++;
+            }
+
+            System.Console.WriteLine($"Збережено {savedToMongo} риб в MongoDB\n");
+
+            // LINQ статистика з PostgreSQL
+            System.Console.WriteLine("=== LINQ: Статистика з PostgreSQL ===\n");
+
+            var allFishFromDb = await fishRepo.GetAllAsync();
+            var freshwaterFishes = allFishFromDb.OfType<FreshwaterFishModel>().ToList();
+            var saltwaterFishes = allFishFromDb.OfType<SaltwaterFishModel>().ToList();
+            var migratoryFishes = allFishFromDb.OfType<MigratoryFishModel>().ToList();
+
             if (freshwaterFishes.Any())
             {
                 System.Console.WriteLine("Прісноводні риби:");
@@ -79,8 +292,6 @@ namespace Fish.Console
                                        $"Avg={freshwaterFishes.Average(f => f.TankSize):F1}л\n");
             }
 
-            // Статистика для морських риб
-            var saltwaterFishes = allFish.OfType<SaltwaterFish>().ToList();
             if (saltwaterFishes.Any())
             {
                 System.Console.WriteLine("Морські риби:");
@@ -95,169 +306,49 @@ namespace Fish.Console
                                        $"({saltwaterFishes.Count(f => f.CoralReefCompatible) * 100.0 / saltwaterFishes.Count:F1}%)\n");
             }
 
-            // Статистика для мігруючих риб
-            var migratoryFishes = allFish.OfType<MigratoryFish>().ToList();
             if (migratoryFishes.Any())
             {
                 System.Console.WriteLine("Мігруючі риби:");
                 System.Console.WriteLine($"  Кількість: {migratoryFishes.Count}");
                 System.Console.WriteLine($"  Відстань міграції: Min={migratoryFishes.Min(f => f.MigrationDistance):F0}км, " +
                                        $"Max={migratoryFishes.Max(f => f.MigrationDistance):F0}км, " +
-                                       $"Avg={migratoryFishes.Average(f => f.MigrationDistance):F0}км");
-                
-                var seasonGroups = migratoryFishes.GroupBy(f => f.MigrationSeason);
-                System.Console.WriteLine("  Розподіл по сезонах:");
-                foreach (var group in seasonGroups.OrderByDescending(g => g.Count()))
-                {
-                    System.Console.WriteLine($"    {group.Key}: {group.Count()} ({group.Count() * 100.0 / migratoryFishes.Count:F1}%)");
-                }
-                System.Console.WriteLine();
+                                       $"Avg={migratoryFishes.Average(f => f.MigrationDistance):F0}км\n");
             }
 
-            // Загальна статистика по швидкості та довжині
-            System.Console.WriteLine("Загальна статистика:");
-            System.Console.WriteLine($"  Швидкість: Min={allFish.Min(f => f.FishType.TopSpeed)} км/год, " +
-                                   $"Max={allFish.Max(f => f.FishType.TopSpeed)} км/год, " +
-                                   $"Avg={allFish.Average(f => f.FishType.TopSpeed):F1} км/год");
-            System.Console.WriteLine($"  Довжина: Min={allFish.Min(f => f.FishType.Length):F2}м, " +
-                                   $"Max={allFish.Max(f => f.FishType.Length):F2}м, " +
-                                   $"Avg={allFish.Average(f => f.FishType.Length):F2}м");
-            System.Console.WriteLine($"  Хижаки: {allFish.Count(f => f.FishType.IsPredatory)} " +
-                                   $"({allFish.Count(f => f.FishType.IsPredatory) * 100.0 / allFish.Count():F1}%)\n");
+            // Загальна статистика
+            System.Console.WriteLine("Загальна статистика (PostgreSQL):");
+            System.Console.WriteLine($"  Всього риб: {allFishFromDb.Count()}");
+            System.Console.WriteLine($"  Швидкість: Min={allFishFromDb.Min(f => f.TopSpeed)} км/год, " +
+                                   $"Max={allFishFromDb.Max(f => f.TopSpeed)} км/год, " +
+                                   $"Avg={allFishFromDb.Average(f => f.TopSpeed):F1} км/год");
+            System.Console.WriteLine($"  Довжина: Min={allFishFromDb.Min(f => f.Length):F2}м, " +
+                                   $"Max={allFishFromDb.Max(f => f.Length):F2}м, " +
+                                   $"Avg={allFishFromDb.Average(f => f.Length):F2}м");
+            System.Console.WriteLine($"  Хижаки: {allFishFromDb.Count(f => f.IsPredatory)} " +
+                                   $"({allFishFromDb.Count(f => f.IsPredatory) * 100.0 / allFishFromDb.Count():F1}%)\n");
 
-            // Демонстрація пагінації
-            System.Console.WriteLine("=== Демонстрація пагінації ===");
-            int pageSize = 10;
-            var firstPage = await fishService.ReadAllAsync(1, pageSize);
-            System.Console.WriteLine($"Перша сторінка (10 елементів):");
-            foreach (var fish in firstPage.Take(5))
-            {
-                System.Console.WriteLine($"  - {fish.FishType.Variety} (ID: {fish.Id.ToString()[..8]}...)");
-            }
-            System.Console.WriteLine($"  ... та ще {pageSize - 5} елементів\n");
+            // Статистика з MongoDB
+            System.Console.WriteLine("=== Статистика з MongoDB ===");
+            var mongoCount = await mongoRepo.CountAsync();
+            System.Console.WriteLine($"Всього риб в MongoDB: {mongoCount}\n");
 
-            // Демонстрація примітивів синхронізації
-            System.Console.WriteLine("=== Примітиви синхронізації ===\n");
-
-            // 1. Lock - захист критичної секції
-            System.Console.WriteLine("1. Lock - захист лічильника:");
-            _counter = 0;
-            var lockTasks = new List<Task>();
-            for (int i = 0; i < 10; i++)
-            {
-                lockTasks.Add(Task.Run(() => IncrementWithLock()));
-            }
-            await Task.WhenAll(lockTasks);
-            System.Console.WriteLine($"   Результат: {_counter} (очікувалось: 1000)\n");
-
-            // 2. SemaphoreSlim - обмеження кількості одночасних операцій
-            System.Console.WriteLine("2. SemaphoreSlim - обмеження до 3 одночасних операцій:");
-            var semaphore = new SemaphoreSlim(3, 3);
-            var semaphoreTasks = new List<Task>();
-            for (int i = 0; i < 10; i++)
-            {
-                int taskId = i + 1;
-                semaphoreTasks.Add(Task.Run(async () => await WorkWithSemaphore(semaphore, taskId)));
-            }
-            await Task.WhenAll(semaphoreTasks);
-            System.Console.WriteLine();
-
-            // 3. AutoResetEvent - сигналізація між потоками
-            System.Console.WriteLine("3. AutoResetEvent - сигналізація між потоками:");
-            var autoResetEvent = new AutoResetEvent(false);
-            var waiterTask = Task.Run(() =>
-            {
-                System.Console.WriteLine("   Потік чекає на сигнал...");
-                autoResetEvent.WaitOne();
-                System.Console.WriteLine("   Потік отримав сигнал і продовжує роботу!");
-            });
+            // Демонстрація зв'язків
+            System.Console.WriteLine("=== Демонстрація зв'язків ===");
             
-            await Task.Delay(1000);
-            System.Console.WriteLine("   Головний потік надсилає сигнал...");
-            autoResetEvent.Set();
-            await waiterTask;
+            // Один-до-багатьох: Aquarium → Fish
+            var firstAquarium = aquariums.First();
+            var fishInAquarium = allFishFromDb.Where(f => f.AquariumId == firstAquarium.Id).Take(3);
+            System.Console.WriteLine($"Акваріум '{firstAquarium.Name}' містить риб:");
+            foreach (var f in fishInAquarium)
+            {
+                System.Console.WriteLine($"  - {f.Variety}");
+            }
             System.Console.WriteLine();
 
-            // 4. Monitor - Wait/Pulse pattern
-            System.Console.WriteLine("4. Monitor - Wait/Pulse pattern:");
-            var monitorLock = new object();
-            var producerTask = Task.Run(() => ProducerWithMonitor(monitorLock));
-            var consumerTask = Task.Run(() => ConsumerWithMonitor(monitorLock));
-            await Task.WhenAll(producerTask, consumerTask);
-            System.Console.WriteLine();
-
-            // Збереження колекції у файл
-            System.Console.WriteLine("=== Збереження у файл ===");
-            var saved = await fishService.SaveAsync();
-            if (saved)
-            {
-                var fileInfo = new FileInfo(fishService.FilePath);
-                System.Console.WriteLine($"Колекція збережена у файл");
-            }
-
-            // Демонстрація IEnumerable
-            System.Console.WriteLine("=== Демонстрація IEnumerable ===");
-            System.Console.WriteLine("Перші 5 риб через foreach:");
-            int count = 0;
-            foreach (var fish in fishService)
-            {
-                if (count++ >= 5) break;
-                System.Console.WriteLine($"  - {fish.FishType.Variety}");
-            }
-
-            System.Console.WriteLine("\n=== Завершено ===");
+            System.Console.WriteLine("=== Завершено ===");
             System.Console.WriteLine($"Всього створено риб: {FishBase.TotalFishCount}");
-        }
-
-        // Метод для демонстрації lock
-        static void IncrementWithLock()
-        {
-            for (int i = 0; i < 100; i++)
-            {
-                lock (_lockObject)
-                {
-                    _counter++;
-                }
-            }
-        }
-
-        // Метод для демонстрації SemaphoreSlim
-        static async Task WorkWithSemaphore(SemaphoreSlim semaphore, int taskId)
-        {
-            await semaphore.WaitAsync();
-            try
-            {
-                System.Console.WriteLine($"   Завдання {taskId} виконується...");
-                await Task.Delay(500);
-                System.Console.WriteLine($"   Завдання {taskId} завершено");
-            }
-            finally
-            {
-                semaphore.Release();
-            }
-        }
-
-        // Producer для Monitor
-        static void ProducerWithMonitor(object lockObj)
-        {
-            lock (lockObj)
-            {
-                System.Console.WriteLine("   Producer: готує дані...");
-                Thread.Sleep(1000);
-                System.Console.WriteLine("   Producer: дані готові, надсилає сигнал");
-                Monitor.Pulse(lockObj);
-            }
-        }
-
-        // Consumer для Monitor
-        static void ConsumerWithMonitor(object lockObj)
-        {
-            lock (lockObj)
-            {
-                System.Console.WriteLine("   Consumer: чекає на дані...");
-                Monitor.Wait(lockObj);
-                System.Console.WriteLine("   Consumer: отримав дані та обробляє їх");
-            }
+            System.Console.WriteLine($"Збережено в PostgreSQL: {savedToPostgres}");
+            System.Console.WriteLine($"Збережено в MongoDB: {savedToMongo}");
         }
     }
 }
