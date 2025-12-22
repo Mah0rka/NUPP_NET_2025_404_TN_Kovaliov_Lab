@@ -44,7 +44,12 @@ namespace Fish.Console
             System.Console.WriteLine("Підключення до MongoDB...");
             try
             {
-                await mongoRepo.ClearAsync(); // Очищення колекції для чистого тесту
+                var existingCount = await mongoRepo.CountAsync();
+                if (existingCount > 0)
+                {
+                    System.Console.WriteLine($"Знайдено {existingCount} існуючих документів. Очищення колекції...");
+                    await mongoRepo.ClearAsync();
+                }
                 System.Console.WriteLine("MongoDB підключено!\n");
             }
             catch (Exception ex)
@@ -227,7 +232,7 @@ namespace Fish.Console
 
             // Збереження в MongoDB
             System.Console.WriteLine("=== Збереження в MongoDB ===");
-            int savedToMongo = 0;
+            var fishDocuments = new List<FishDocument>();
 
             foreach (var fish in allFishList)
             {
@@ -263,11 +268,12 @@ namespace Fish.Console
                     fishDoc.MigrationSeason = mf.MigrationSeason;
                 }
 
-                await mongoRepo.AddAsync(fishDoc);
-                savedToMongo++;
+                fishDocuments.Add(fishDoc);
             }
 
-            System.Console.WriteLine($"Збережено {savedToMongo} риб в MongoDB\n");
+            // Batch insert - набагато швидше
+            await mongoRepo.AddManyAsync(fishDocuments);
+            System.Console.WriteLine($"Збережено {fishDocuments.Count} риб в MongoDB\n");
 
             // LINQ статистика з PostgreSQL
             System.Console.WriteLine("=== LINQ: Статистика з PostgreSQL ===\n");
