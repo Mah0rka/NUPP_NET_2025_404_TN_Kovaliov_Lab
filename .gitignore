@@ -426,6 +426,5 @@ FodyWeavers.xsd
 *.pptx
 *.txt
 *.csv
-*.json
 *.xml
 tasks/
