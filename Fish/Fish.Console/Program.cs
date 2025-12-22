@@ -16,7 +16,7 @@ namespace Fish.Console
             System.Console.WriteLine("=== Лабораторна робота №3: Entity Framework та MongoDB ===\n");
 
             // Налаштування PostgreSQL
-            var connectionString = "Host=localhost;Database=FishDb;Username=postgres;Password=postgres";
+            var connectionString = "Host=localhost;Database=FishDb;Username=postgres;Password=123";
             var optionsBuilder = new DbContextOptionsBuilder<FishContext>();
             optionsBuilder.UseNpgsql(connectionString);
 
@@ -36,7 +36,7 @@ namespace Fish.Console
             }
 
             // Налаштування MongoDB
-            var mongoConnectionString = "mongodb://localhost:27017";
+            var mongoConnectionString = "mongodb+srv://admin:12345678+@fishdb.26j2crt.mongodb.net/";
             var mongoDatabase = "FishDb";
             var mongoCollection = "fishes";
             var mongoRepo = new MongoRepository<FishDocument>(mongoConnectionString, mongoDatabase, mongoCollection);
@@ -213,7 +213,7 @@ namespace Fish.Console
                 // Додавання деталей (один-до-одного)
                 fishModel.Details = new FishDetailsModel
                 {
-                    BirthDate = DateTime.Now.AddDays(-random.Next(30, 365)),
+                    BirthDate = DateTime.UtcNow.AddDays(-random.Next(30, 365)),
                     HealthStatus = random.Next(2) == 0 ? "Здорова" : "Відмінна",
                     Weight = Math.Round(random.NextDouble() * 2 + 0.1, 2)
                 };
