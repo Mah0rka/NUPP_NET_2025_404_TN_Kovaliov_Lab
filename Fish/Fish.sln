@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fish.Common", "Fish.Common\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fish.Console", "Fish.Console\Fish.Console.csproj", "{14ED1B6E-C32B-4A6E-A5FE-A1777A1BE6BA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fish.Tests", "Fish.Tests\Fish.Tests.csproj", "{4E887B4F-0AD7-4D66-AF73-2620076F0DBB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,18 @@ Global
 		{14ED1B6E-C32B-4A6E-A5FE-A1777A1BE6BA}.Release|x64.Build.0 = Release|Any CPU
 		{14ED1B6E-C32B-4A6E-A5FE-A1777A1BE6BA}.Release|x86.ActiveCfg = Release|Any CPU
 		{14ED1B6E-C32B-4A6E-A5FE-A1777A1BE6BA}.Release|x86.Build.0 = Release|Any CPU
+		{4E887B4F-0AD7-4D66-AF73-2620076F0DBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E887B4F-0AD7-4D66-AF73-2620076F0DBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E887B4F-0AD7-4D66-AF73-2620076F0DBB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4E887B4F-0AD7-4D66-AF73-2620076F0DBB}.Debug|x64.Build.0 = Debug|Any CPU
+		{4E887B4F-0AD7-4D66-AF73-2620076F0DBB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4E887B4F-0AD7-4D66-AF73-2620076F0DBB}.Debug|x86.Build.0 = Debug|Any CPU
+		{4E887B4F-0AD7-4D66-AF73-2620076F0DBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E887B4F-0AD7-4D66-AF73-2620076F0DBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E887B4F-0AD7-4D66-AF73-2620076F0DBB}.Release|x64.ActiveCfg = Release|Any CPU
+		{4E887B4F-0AD7-4D66-AF73-2620076F0DBB}.Release|x64.Build.0 = Release|Any CPU
+		{4E887B4F-0AD7-4D66-AF73-2620076F0DBB}.Release|x86.ActiveCfg = Release|Any CPU
+		{4E887B4F-0AD7-4D66-AF73-2620076F0DBB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабораторна робота №2 - Результати</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #555;
+            margin-top: 20px;
+        }
+        pre {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            line-height: 1.6;
+        }
+        .info {
+            background-color: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .success {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Лабораторна робота №2</h1>
+        <h2>Багатопоковість. Асинхроність. IEnumerables. LINQ.</h2>
+        
+        <div class="info">
+            <strong>Студент:</strong> Ковальов<br>
+            <strong>Група:</strong> 404 ТН<br>
+            <strong>Дата виконання:</strong> 22 грудня 2025
+        </div>
+
+        <h2>Результати виконання програми</h2>
+
+        <h3>1. Паралельне створення об'єктів</h3>
+        <pre>=== Паралельне створення риб ===
+Створюємо 1200 об'єктів риб паралельно...
+
+Створено 1200 об'єктів риб
+Час виконання: 27.11 мс</pre>
+        
+        <div class="success">
+            ✓ Успішно створено 1200 об'єктів риб паралельно за допомогою <span class="highlight">Parallel.For</span>
+        </div>
+
+        <h3>2. LINQ: Статистика по рибах</h3>
+        
+        <h4>Прісноводні риби</h4>
+        <table>
+            <tr>
+                <th>Параметр</th>
+                <th>Мінімум</th>
+                <th>Максимум</th>
+                <th>Середнє</th>
+            </tr>
+            <tr>
+                <td>Температура</td>
+                <td>15.1°C</td>
+                <td>28.0°C</td>
+                <td>21.3°C</td>
+            </tr>
+            <tr>
+                <td>pH</td>
+                <td>6.0</td>
+                <td>8.5</td>
+                <td>7.3</td>
+            </tr>
+            <tr>
+                <td>Розмір акваріума</td>
+                <td>20л</td>
+                <td>199л</td>
+                <td>114.4л</td>
+            </tr>
+        </table>
+
+        <h4>Морські риби</h4>
+        <table>
+            <tr>
+                <th>Параметр</th>
+                <th>Мінімум</th>
+                <th>Максимум</th>
+                <th>Середнє</th>
+            </tr>
+            <tr>
+                <td>Максимальна глибина</td>
+                <td>52м</td>
+                <td>1497м</td>
+                <td>785.8м</td>
+            </tr>
+            <tr>
+                <td>Толерантність до солі</td>
+                <td>2.5%</td>
+                <td>4.0%</td>
+                <td>3.2%</td>
+            </tr>
+            <tr>
+                <td>Сумісні з рифами</td>
+                <td colspan="3">200 (50.0%)</td>
+            </tr>
+        </table>
+
+        <h4>Мігруючі риби</h4>
+        <table>
+            <tr>
+                <th>Параметр</th>
+                <th>Мінімум</th>
+                <th>Максимум</th>
+                <th>Середнє</th>
+            </tr>
+            <tr>
+                <td>Відстань міграції</td>
+                <td>515км</td>
+                <td>4986км</td>
+                <td>2774км</td>
+            </tr>
+        </table>
+
+        <h4>Розподіл по сезонах міграції</h4>
+        <table>
+            <tr>
+                <th>Сезон</th>
+                <th>Кількість</th>
+                <th>Відсоток</th>
+            </tr>
+            <tr>
+                <td>Осінь</td>
+                <td>115</td>
+                <td>28.8%</td>
+            </tr>
+            <tr>
+                <td>Зима</td>
+                <td>113</td>
+                <td>28.2%</td>
+            </tr>
+            <tr>
+                <td>Літо</td>
+                <td>93</td>
+                <td>23.2%</td>
+            </tr>
+            <tr>
+                <td>Весна</td>
+                <td>79</td>
+                <td>19.8%</td>
+            </tr>
+        </table>
+
+        <h4>Загальна статистика</h4>
+        <table>
+            <tr>
+                <th>Параметр</th>
+                <th>Мінімум</th>
+                <th>Максимум</th>
+                <th>Середнє</th>
+            </tr>
+            <tr>
+                <td>Швидкість</td>
+                <td>3 км/год</td>
+                <td>79 км/год</td>
+                <td>30.3 км/год</td>
+            </tr>
+            <tr>
+                <td>Довжина</td>
+                <td>0.05м</td>
+                <td>5.46м</td>
+                <td>1.41м</td>
+            </tr>
+            <tr>
+                <td>Хижаки</td>
+                <td colspan="3">603 (50.2%)</td>
+            </tr>
+        </table>
+
+        <div class="success">
+            ✓ LINQ методи використані: <span class="highlight">Min()</span>, <span class="highlight">Max()</span>, 
+            <span class="highlight">Average()</span>, <span class="highlight">Count()</span>, 
+            <span class="highlight">GroupBy()</span>, <span class="highlight">OfType()</span>
+        </div>
+
+        <h3>3. Демонстрація пагінації</h3>
+        <pre>Перша сторінка (10 елементів):
+  - Скалярія (ID: 9a23ae02...)
+  - Осетер (ID: f66405e9...)
+  - Морський окунь (ID: 0770e07f...)
+  - Форель (ID: bf0445ce...)
+  - Данио (ID: b578a8de...)
+  ... та ще 5 елементів</pre>
+
+        <div class="success">
+            ✓ Реалізовано метод <span class="highlight">ReadAllAsync(int page, int amount)</span> для пагінації
+        </div>
+
+        <h3>4. Примітиви синхронізації</h3>
+
+        <h4>4.1. Lock - захист критичної секції</h4>
+        <pre>1. Lock - захист лічильника:
+   Результат: 1000 (очікувалось: 1000)</pre>
+        <div class="success">
+            ✓ Використано <span class="highlight">lock</span> для захисту спільного ресурсу
+        </div>
+
+        <h4>4.2. SemaphoreSlim - обмеження одночасних операцій</h4>
+        <pre>2. SemaphoreSlim - обмеження до 3 одночасних операцій:
+   Завдання 10 виконується...
+   Завдання 5 виконується...
+   Завдання 4 виконується...
+   Завдання 10 завершено
+   Завдання 5 завершено
+   Завдання 4 завершено
+   Завдання 1 виконується...
+   Завдання 7 виконується...
+   Завдання 8 виконується...
+   ...</pre>
+        <div class="success">
+            ✓ Використано <span class="highlight">SemaphoreSlim</span> для обмеження до 3 одночасних операцій
+        </div>
+
+        <h4>4.3. AutoResetEvent - сигналізація між потоками</h4>
+        <pre>3. AutoResetEvent - сигналізація між потоками:
+   Потік чекає на сигнал...
+   Головний потік надсилає сигнал...
+   Потік отримав сигнал і продовжує роботу!</pre>
+        <div class="success">
+            ✓ Використано <span class="highlight">AutoResetEvent</span> для синхронізації потоків
+        </div>
+
+        <h4>4.4. Monitor - Wait/Pulse pattern</h4>
+        <pre>4. Monitor - Wait/Pulse pattern:
+   Consumer: чекає на дані...
+   Producer: готує дані...
+   Producer: дані готові, надсилає сигнал
+   Consumer: отримав дані та обробляє їх</pre>
+        <div class="success">
+            ✓ Використано <span class="highlight">Monitor.Wait()</span> та <span class="highlight">Monitor.Pulse()</span>
+        </div>
+
+        <h3>5. Збереження у файл</h3>
+        <pre>=== Збереження у файл ===
+Колекція збережена у файл: fish_collection.json
+Розмір файлу: 366.79 KB</pre>
+        <div class="success">
+            ✓ Колекція успішно серіалізована у JSON формат та збережена асинхронно
+        </div>
+
+        <h3>6. Демонстрація IEnumerable</h3>
+        <pre>Перші 5 риб через foreach:
+  - Скалярія
+  - Осетер
+  - Морський окунь
+  - Форель
+  - Данио</pre>
+        <div class="success">
+            ✓ Реалізовано інтерфейс <span class="highlight">IEnumerable&lt;T&gt;</span>
+        </div>
+
+        <h2>Модульні тести (Unit Tests)</h2>
+        <pre>Test run for Fish.Tests.dll (.NETCoreApp,Version=v9.0)
+
+Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17</pre>
+        
+        <div class="success">
+            ✓ Всі 17 модульних тестів пройдені успішно
+        </div>
+
+        <h3>Список тестів:</h3>
+        <ul>
+            <li>CreateAsync_ShouldAddElement</li>
+            <li>CreateAsync_WithNull_ShouldReturnFalse</li>
+            <li>ReadAsync_ShouldReturnElement</li>
+            <li>ReadAsync_WithInvalidId_ShouldReturnNull</li>
+            <li>ReadAllAsync_ShouldReturnAllElements</li>
+            <li>ReadAllAsync_WithPagination_ShouldReturnPagedResults</li>
+            <li>ReadAllAsync_WithInvalidPagination_ShouldReturnEmpty</li>
+            <li>UpdateAsync_ShouldUpdateElement</li>
+            <li>UpdateAsync_WithNonExistingElement_ShouldReturnFalse</li>
+            <li>RemoveAsync_ShouldRemoveElement</li>
+            <li>RemoveAsync_WithNull_ShouldReturnFalse</li>
+            <li>SaveAsync_ShouldSerializeToFile</li>
+            <li>LoadAsync_ShouldDeserializeFromFile</li>
+            <li>ConcurrentCreates_ShouldBeThreadSafe</li>
+            <li>IEnumerable_ShouldSupportForEach</li>
+            <li>IEnumerable_ShouldSupportLinq</li>
+        </ul>
+
+        <h2>Висновки</h2>
+        <div class="info">
+            <p>В ході виконання лабораторної роботи було реалізовано:</p>
+            <ol>
+                <li><strong>Асинхронний CRUD сервіс</strong> з підтримкою багатопотоковості на базі ConcurrentDictionary</li>
+                <li><strong>Thread-safe операції</strong> з використанням SemaphoreSlim для синхронізації доступу до файлів</li>
+                <li><strong>Пагінація</strong> для ефективного читання великих колекцій</li>
+                <li><strong>JSON серіалізація</strong> для збереження даних у файл</li>
+                <li><strong>Паралельне створення об'єктів</strong> за допомогою Parallel.For</li>
+                <li><strong>LINQ запити</strong> для аналізу даних (Min, Max, Average, GroupBy)</li>
+                <li><strong>Примітиви синхронізації</strong>: lock, SemaphoreSlim, AutoResetEvent, Monitor</li>
+                <li><strong>17 модульних тестів</strong> для перевірки коректності роботи сервісу</li>
+            </ol>
+            <p>Всі завдання лабораторної роботи виконано успішно.</p>
+        </div>
+    </div>
+</body>
+</html>
+
