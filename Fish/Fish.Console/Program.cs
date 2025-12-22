@@ -13,7 +13,6 @@ namespace Fish.Console
         {
             System.Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-            System.Console.WriteLine("=== Лабораторна робота №3: Entity Framework та MongoDB ===\n");
 
             // Налаштування PostgreSQL
             var connectionString = "Host=localhost;Database=FishDb;Username=postgres;Password=123";
