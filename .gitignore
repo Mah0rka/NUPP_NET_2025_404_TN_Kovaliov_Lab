@@ -424,7 +424,6 @@ FodyWeavers.xsd
 *.xlsx
 *.ppt
 *.pptx
-*.pdf
 *.txt
 *.csv
 *.json
