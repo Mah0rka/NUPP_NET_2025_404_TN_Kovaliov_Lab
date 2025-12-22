@@ -13,7 +13,6 @@ namespace Fish.Console
         static async Task Main(string[] args)
         {
             System.Console.OutputEncoding = System.Text.Encoding.UTF8;
-            System.Console.WriteLine("=== Лабораторна робота №2: Асинхронність та багатопотоковість ===\n");
 
             // Створення асинхронного CRUD сервісу
             var fishService = new CrudServiceAsync<FishBase>(fish => fish.Id, "fish_collection.json");
