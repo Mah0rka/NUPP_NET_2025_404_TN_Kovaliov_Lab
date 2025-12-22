@@ -7,7 +7,8 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Налаштування підключення до PostgreSQL
-var connectionString = "Host=localhost;Database=FishDb;Username=postgres;Password=123";
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<FishContext>(options =>
     options.UseNpgsql(connectionString));
 
