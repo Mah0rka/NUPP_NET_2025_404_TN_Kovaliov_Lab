@@ -192,8 +192,7 @@ namespace Fish.Console
             if (saved)
             {
                 var fileInfo = new FileInfo(fishService.FilePath);
-                System.Console.WriteLine($"Колекція збережена у файл: {fishService.FilePath}");
-                System.Console.WriteLine($"Розмір файлу: {fileInfo.Length / 1024.0:F2} KB\n");
+                System.Console.WriteLine($"Колекція збережена у файл");
             }
 
             // Демонстрація IEnumerable
