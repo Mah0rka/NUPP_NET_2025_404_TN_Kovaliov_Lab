@@ -418,3 +418,14 @@ FodyWeavers.xsd
 *.msm
 *.msp
 *.md
+*.docx
+*.doc
+*.xls
+*.xlsx
+*.ppt
+*.pptx
+*.pdf
+*.txt
+*.csv
+*.json
+*.xml
