@@ -35,12 +35,6 @@ namespace Fish.NoSQL
             await _collection.InsertOneAsync(entity);
         }
 
-        // Додати багато елементів одночасно (batch insert)
-        public async Task AddManyAsync(IEnumerable<T> entities)
-        {
-            await _collection.InsertManyAsync(entities);
-        }
-
         // Оновити елемент
         public async Task UpdateAsync(string id, T entity)
         {
