@@ -12,6 +12,7 @@ namespace Fish.NoSQL.Models
         public string? Id { get; set; }
 
         [BsonElement("externalId")]
+        [BsonRepresentation(BsonType.String)]
         public Guid ExternalId { get; set; }
 
         [BsonElement("variety")]
