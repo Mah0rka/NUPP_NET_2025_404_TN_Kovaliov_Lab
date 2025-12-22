@@ -428,3 +428,4 @@ FodyWeavers.xsd
 *.csv
 *.json
 *.xml
+tasks/
