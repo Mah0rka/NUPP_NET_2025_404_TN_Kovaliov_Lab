@@ -1,6 +1,7 @@
 using Fish.Common.Services;
 using Fish.Infrastructure.Models;
 using Fish.REST.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fish.REST.Controllers
@@ -18,6 +19,7 @@ namespace Fish.REST.Controllers
 
         // GET: api/aquariums
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<AquariumResponseDto>>> GetAll([FromQuery] int? page, [FromQuery] int? amount)
         {
             try
@@ -53,6 +55,7 @@ namespace Fish.REST.Controllers
 
         // GET: api/aquariums/{id}
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<AquariumResponseDto>> GetById(Guid id)
         {
             try
@@ -81,6 +84,7 @@ namespace Fish.REST.Controllers
 
         // POST: api/aquariums
         [HttpPost]
+        [Authorize(Roles = "Manager,Admin")]
         public async Task<ActionResult<AquariumResponseDto>> Create([FromBody] AquariumDto aquariumDto)
         {
             try
@@ -120,6 +124,7 @@ namespace Fish.REST.Controllers
 
         // PUT: api/aquariums/{id}
         [HttpPut("{id}")]
+        [Authorize(Roles = "Manager,Admin")]
         public async Task<ActionResult> Update(Guid id, [FromBody] AquariumDto aquariumDto)
         {
             try
@@ -152,6 +157,7 @@ namespace Fish.REST.Controllers
 
         // DELETE: api/aquariums/{id}
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Manager,Admin")]
         public async Task<ActionResult> Delete(Guid id)
         {
             try

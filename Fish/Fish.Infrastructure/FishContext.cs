@@ -1,10 +1,11 @@
 using Fish.Infrastructure.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fish.Infrastructure
 {
-    // DbContext для роботи з базою даних риб
-    public class FishContext : DbContext
+    // DbContext для роботи з базою даних риб та Identity
+    public class FishContext : IdentityDbContext<ApplicationUser>
     {
         public FishContext(DbContextOptions<FishContext> options) : base(options)
         {
