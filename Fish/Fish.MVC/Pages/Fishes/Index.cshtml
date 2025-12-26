@@ -1,0 +1,72 @@
+@page
+@model Fish.MVC.Pages_Fishes.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FishModel[0].ExternalId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FishModel[0].Variety)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FishModel[0].Habitat)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FishModel[0].TopSpeed)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FishModel[0].IsPredatory)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FishModel[0].Length)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FishModel[0].Aquarium)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.FishModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ExternalId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Variety)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Habitat)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TopSpeed)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsPredatory)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Length)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Aquarium.Location)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
