@@ -14,6 +14,22 @@ var builder = WebApplication.CreateBuilder(args);
 // Налаштування підключення до PostgreSQL
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+// Конвертація URI формату (postgresql://...) в ADO.NET формат для Npgsql
+if (connectionString.StartsWith("postgresql://") || connectionString.StartsWith("postgres://"))
+{
+    var uri = new Uri(connectionString);
+    var userInfo = uri.UserInfo.Split(':');
+    var host = uri.Host;
+    var port = uri.Port > 0 ? uri.Port : 5432;
+    var database = uri.AbsolutePath.TrimStart('/');
+    var username = userInfo[0];
+    var password = userInfo.Length > 1 ? userInfo[1] : "";
+    
+    connectionString = $"Host={host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+    Console.WriteLine($"Connection string converted to ADO.NET format. Host: {host}, Database: {database}");
+}
+
 builder.Services.AddDbContext<FishContext>(options =>
     options.UseNpgsql(connectionString));
 
