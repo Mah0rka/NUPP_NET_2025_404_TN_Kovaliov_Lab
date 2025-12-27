@@ -1,0 +1,22 @@
+[
+  {
+    "FishType": {
+      "Variety": "\u0410\u043A\u0443\u043B\u0430",
+      "Habitat": "\u041E\u043A\u0435\u0430\u043D",
+      "TopSpeed": 50,
+      "IsPredatory": true,
+      "Length": 4.5
+    },
+    "Id": "e4f3c0a8-6f81-4d73-8808-ac66c792800a"
+  },
+  {
+    "FishType": {
+      "Variety": "\u041B\u043E\u0441\u043E\u0441\u044C",
+      "Habitat": "\u0420\u0456\u043A\u0438 \u0442\u0430 \u043E\u043A\u0435\u0430\u043D\u0438",
+      "TopSpeed": 30,
+      "IsPredatory": false,
+      "Length": 0.8
+    },
+    "Id": "c7a774c9-43a8-487d-a560-a5d4ae0e95b3"
+  }
+]

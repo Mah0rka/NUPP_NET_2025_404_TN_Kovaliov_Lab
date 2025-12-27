@@ -1,0 +1,30 @@
+[
+  {
+    "$type": "saltwater",
+    "SaltTolerance": 3.5,
+    "MaxDepth": 1000,
+    "CoralReefCompatible": true,
+    "FishType": {
+      "Variety": "\u0410\u043A\u0443\u043B\u0430",
+      "Habitat": "\u041E\u043A\u0435\u0430\u043D",
+      "TopSpeed": 50,
+      "IsPredatory": true,
+      "Length": 4.5
+    },
+    "Id": "6093f4d8-0918-40ff-8d24-202e55591e81"
+  },
+  {
+    "$type": "migratory",
+    "MigrationDistance": 3000,
+    "SpawningGrounds": "\u0420\u0456\u043A\u0430 \u0424\u0440\u0435\u0439\u0437\u0435\u0440",
+    "MigrationSeason": "\u041E\u0441\u0456\u043D\u044C",
+    "FishType": {
+      "Variety": "\u041B\u043E\u0441\u043E\u0441\u044C",
+      "Habitat": "\u0420\u0456\u043A\u0438 \u0442\u0430 \u043E\u043A\u0435\u0430\u043D\u0438",
+      "TopSpeed": 30,
+      "IsPredatory": false,
+      "Length": 0.8
+    },
+    "Id": "3a63872c-48e8-470d-8c55-46346a471fde"
+  }
+]
