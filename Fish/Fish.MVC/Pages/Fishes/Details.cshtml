@@ -1,0 +1,61 @@
+@page
+@model Fish.MVC.Pages_Fishes.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>FishModel</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.FishModel.ExternalId)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.FishModel.ExternalId)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.FishModel.Variety)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.FishModel.Variety)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.FishModel.Habitat)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.FishModel.Habitat)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.FishModel.TopSpeed)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.FishModel.TopSpeed)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.FishModel.IsPredatory)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.FishModel.IsPredatory)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.FishModel.Length)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.FishModel.Length)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.FishModel.Aquarium)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.FishModel.Aquarium.Location)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.FishModel.Id">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

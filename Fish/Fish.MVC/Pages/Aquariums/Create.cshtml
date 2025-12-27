@@ -1,0 +1,49 @@
+@page
+@model Fish.MVC.Pages_Aquariums.CreateModel
+
+        @{
+        ViewData["Title"] = "Create";
+        }
+        
+        <h1>Create</h1>
+        
+    <h4>AquariumModel</h4>
+    <hr />
+    <div class="row">
+    <div class="col-md-4">
+    <form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="AquariumModel.ExternalId" class="control-label"></label>
+                <input asp-for="AquariumModel.ExternalId" class="form-control" />
+                <span asp-validation-for="AquariumModel.ExternalId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AquariumModel.Name" class="control-label"></label>
+                <input asp-for="AquariumModel.Name" class="form-control" />
+                <span asp-validation-for="AquariumModel.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AquariumModel.Volume" class="control-label"></label>
+                <input asp-for="AquariumModel.Volume" class="form-control" />
+                <span asp-validation-for="AquariumModel.Volume" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AquariumModel.Location" class="control-label"></label>
+                <input asp-for="AquariumModel.Location" class="form-control" />
+                <span asp-validation-for="AquariumModel.Location" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

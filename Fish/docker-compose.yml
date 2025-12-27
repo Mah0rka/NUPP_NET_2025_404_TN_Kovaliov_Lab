@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: fish-postgres
+    environment:
+      POSTGRES_DB: FishDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  fish-rest:
+    build:
+      context: .
+      dockerfile: Fish.REST/Dockerfile
+    container_name: fish-rest-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=FishDb;Username=postgres;Password=123
+      - JwtSettings__SecretKey=FishRestApiSecretKeyForJwtToken2025!
+      - JwtSettings__Issuer=FishRestApi
+      - JwtSettings__Audience=FishRestApiUsers
+      - JwtSettings__ExpiryInHours=24
+    ports:
+      - "5000:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  fish-mvc:
+    build:
+      context: .
+      dockerfile: Fish.MVC/Dockerfile
+    container_name: fish-mvc-web
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=FishDb;Username=postgres;Password=123
+    ports:
+      - "5001:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
