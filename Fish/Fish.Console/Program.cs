@@ -121,6 +121,45 @@ namespace Fish.Console
             {
                 System.Console.WriteLine($"  {aq.Name}: {aq.Volume}л, {aq.Location}");
             }
+            System.Console.WriteLine();
+
+            // Демонстрація Save/Load
+            System.Console.WriteLine("\n=== Збереження та завантаження даних ===\n");
+            
+            string fishFilePath = "fish_data.json";
+            string aquariumFilePath = "aquarium_data.json";
+
+            // SAVE
+            System.Console.WriteLine("--- SAVE ---");
+            fishService.Save(fishFilePath);
+            aquariumService.Save(aquariumFilePath);
+            System.Console.WriteLine();
+
+            // Створюємо нові сервіси та завантажуємо дані
+            System.Console.WriteLine("--- LOAD ---");
+            var newFishService = new CrudService<FishBase>(fish => fish.Id);
+            var newAquariumService = new CrudService<Aquarium>(aq => aq.Id);
+            
+            newFishService.Load(fishFilePath);
+            newAquariumService.Load(aquariumFilePath);
+            System.Console.WriteLine();
+
+            // Перевірка завантажених даних
+            System.Console.WriteLine("--- Перевірка завантажених даних ---");
+            System.Console.WriteLine("Риби:");
+            foreach (var fish in newFishService.ReadAll())
+            {
+                System.Console.WriteLine($"  {fish.FishType.Variety}");
+            }
+            System.Console.WriteLine($"Всього риб: {newFishService.Count()}");
+            System.Console.WriteLine();
+
+            System.Console.WriteLine("Акваріуми:");
+            foreach (var aq in newAquariumService.ReadAll())
+            {
+                System.Console.WriteLine($"  {aq.Name}: {aq.Volume}л, {aq.Location}");
+            }
+            System.Console.WriteLine($"Всього акваріумів: {newAquariumService.Count()}");
 
             System.Console.WriteLine("\n=== Завершено ===");
             FishBase.PrintTotalFish();

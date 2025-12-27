@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace Fish.Common.Services
 {
     // Generic CRUD сервіс
@@ -79,6 +81,69 @@ namespace Fish.Common.Services
         public int Count()
         {
             return _items.Count;
+        }
+
+        // Метод збереження даних у файл
+        public void Save(string filePath)
+        {
+            if (string.IsNullOrWhiteSpace(filePath))
+                throw new ArgumentException("Шлях до файлу не може бути порожнім", nameof(filePath));
+
+            try
+            {
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    PropertyNameCaseInsensitive = true
+                };
+
+                string jsonString = JsonSerializer.Serialize(_items, options);
+                File.WriteAllText(filePath, jsonString);
+                Console.WriteLine($"Дані успішно збережено у файл: {filePath}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Помилка при збереженні даних: {ex.Message}");
+                throw;
+            }
+        }
+
+        // Метод завантаження даних з файлу
+        public void Load(string filePath)
+        {
+            if (string.IsNullOrWhiteSpace(filePath))
+                throw new ArgumentException("Шлях до файлу не може бути порожнім", nameof(filePath));
+
+            if (!File.Exists(filePath))
+                throw new FileNotFoundException($"Файл не знайдено: {filePath}");
+
+            try
+            {
+                string jsonString = File.ReadAllText(filePath);
+                
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                var loadedItems = JsonSerializer.Deserialize<List<T>>(jsonString, options);
+                
+                if (loadedItems != null)
+                {
+                    _items = loadedItems;
+                    Console.WriteLine($"Дані успішно завантажено з файлу: {filePath}");
+                    Console.WriteLine($"Завантажено елементів: {_items.Count}");
+                }
+                else
+                {
+                    Console.WriteLine("Файл не містить даних");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Помилка при завантаженні даних: {ex.Message}");
+                throw;
+            }
         }
     }
 }

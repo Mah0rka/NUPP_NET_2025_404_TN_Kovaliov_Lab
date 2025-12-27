@@ -1,7 +1,12 @@
+using System.Text.Json.Serialization;
 using System.Xml.Linq;
 
 namespace Fish.Common
 {
+    [JsonPolymorphic]
+    [JsonDerivedType(typeof(SaltwaterFish), typeDiscriminator: "saltwater")]
+    [JsonDerivedType(typeof(FreshwaterFish), typeDiscriminator: "freshwater")]
+    [JsonDerivedType(typeof(MigratoryFish), typeDiscriminator: "migratory")]
     public abstract class FishBase
     {
         public FishType FishType { get; }
